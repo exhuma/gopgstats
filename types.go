@@ -27,3 +27,9 @@ type ActivityRow struct {
     Query string
     BackendType string
 }
+
+
+type DiskSizeRow struct {
+    DatabaseName string
+    Size int
+}

@@ -26,6 +26,49 @@ func MakeDefaultFetcher(dsn string) (DefaultFetcher, error) {
     return output, nil
 }
 
+var diskSizeQueries = [1]VersionedQuery{
+    VersionedQuery{0, `SELECT datname, pg_database_size(datname)
+                       FROM pg_database WHERE datistemplate=false`}}
+
+
+func getMatchingQuery (fetcher DefaultFetcher, queries []VersionedQuery) string {
+    rows, err := fetcher.db.Query("select current_setting('server_version_num')")
+    defer rows.Close()
+    if err != nil {
+        panic(err)
+    }
+    var version int
+    rows.Next()
+    rows.Scan(&version)
+    query, valid := GetFirstMatch(queries, version)
+    if !valid {
+        panic("Unable to get a matching query for this db-version!")
+    }
+    return query
+}
+
+
+func (fetcher DefaultFetcher) DiskSize() ([]DiskSizeRow, error) {
+    query := getMatchingQuery(fetcher, diskSizeQueries[:])
+    rows, err := fetcher.db.Query(query)
+    defer rows.Close()
+
+    if err != nil {
+        return []DiskSizeRow{}, err
+    }
+
+    output := []DiskSizeRow{};
+    for rows.Next() {
+        var row DiskSizeRow
+        err = rows.Scan(&row.DatabaseName, &row.Size)
+        if err != nil {
+            return []DiskSizeRow{}, err
+        }
+        output = append(output, row)
+    }
+    return output, err
+}
+
 
 func (fetcher DefaultFetcher) Activity() ([]ActivityRow, error) {
     rows, err := fetcher.db.Query(`
