@@ -1,13 +1,11 @@
 package gopgstats
 
-
 var DiskSizeQueries = [1]VersionedQuery{
-    VersionedQuery{0, `SELECT datname, pg_database_size(datname)
+	VersionedQuery{0, `SELECT datname, pg_database_size(datname)
                        FROM pg_database WHERE datistemplate=false`}}
 
-
 var LocksQueries = [1]VersionedQuery{
-    VersionedQuery{0, `SELECT
+	VersionedQuery{0, `SELECT
         db.datname,
         LOWER(mode),
         locktype,
