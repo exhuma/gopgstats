@@ -1,10 +1,9 @@
-package concrete
+package gopgstats
 
 
 import (
     _ "github.com/lib/pq"
     "database/sql"
-    "github.com/exhuma/gopgstats/types"
 )
 
 
@@ -28,7 +27,7 @@ type DefaultFetcher struct {
 }
 
 
-func (fetcher DefaultFetcher) Activity() ([]types.ActivityRow, error) {
+func (fetcher DefaultFetcher) Activity() ([]ActivityRow, error) {
     rows, err := fetcher.db.Query(`
         SELECT
             COALESCE(datid, -1),
@@ -54,12 +53,12 @@ func (fetcher DefaultFetcher) Activity() ([]types.ActivityRow, error) {
         FROM pg_stat_activity
     `)
     if err != nil {
-        return []types.ActivityRow{}, err
+        return []ActivityRow{}, err
     }
     defer rows.Close()
-    output := []types.ActivityRow{};
+    output := []ActivityRow{};
     for rows.Next() {
-        var row types.ActivityRow
+        var row ActivityRow
         err = rows.Scan(
             &row.DatId,
             &row.DatName,
@@ -82,7 +81,7 @@ func (fetcher DefaultFetcher) Activity() ([]types.ActivityRow, error) {
             &row.Query,
             &row.BackendType)
         if err != nil {
-            return []types.ActivityRow{}, err
+            return []ActivityRow{}, err
         }
         output = append(output, row)
     }

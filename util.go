@@ -1,4 +1,4 @@
-package util
+package gopgstats
 
 
 func checkErr(err error) {

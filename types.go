@@ -1,4 +1,4 @@
-package types
+package gopgstats
 
 import (
     "github.com/lib/pq"
