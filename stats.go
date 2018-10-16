@@ -26,11 +26,6 @@ func MakeDefaultFetcher(dsn string) (DefaultFetcher, error) {
     return output, nil
 }
 
-var diskSizeQueries = [1]VersionedQuery{
-    VersionedQuery{0, `SELECT datname, pg_database_size(datname)
-                       FROM pg_database WHERE datistemplate=false`}}
-
-
 func getMatchingQuery (fetcher DefaultFetcher, queries []VersionedQuery) string {
     rows, err := fetcher.db.Query("select current_setting('server_version_num')")
     defer rows.Close()
@@ -49,7 +44,7 @@ func getMatchingQuery (fetcher DefaultFetcher, queries []VersionedQuery) string 
 
 
 func (fetcher DefaultFetcher) DiskSize() ([]DiskSizeRow, error) {
-    query := getMatchingQuery(fetcher, diskSizeQueries[:])
+    query := getMatchingQuery(fetcher, DiskSizeQueries[:])
     rows, err := fetcher.db.Query(query)
     defer rows.Close()
 
@@ -63,6 +58,33 @@ func (fetcher DefaultFetcher) DiskSize() ([]DiskSizeRow, error) {
         err = rows.Scan(&row.DatabaseName, &row.Size)
         if err != nil {
             return []DiskSizeRow{}, err
+        }
+        output = append(output, row)
+    }
+    return output, err
+}
+
+
+func (fetcher DefaultFetcher) Locks() ([]LocksRow, error) {
+    query := getMatchingQuery(fetcher, LocksQueries[:])
+    rows, err := fetcher.db.Query(query)
+    defer rows.Close()
+
+    if err != nil {
+        return []LocksRow{}, err
+    }
+
+    output := []LocksRow{};
+    for rows.Next() {
+        var row LocksRow
+        err = rows.Scan(
+            &row.DatabaseName,
+            &row.Mode,
+            &row.Type,
+            &row.Granted,
+            &row.Count)
+        if err != nil {
+            return []LocksRow{}, err
         }
         output = append(output, row)
     }
