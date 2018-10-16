@@ -7,6 +7,11 @@ import (
 )
 
 
+type DefaultFetcher struct {
+    db *sql.DB
+}
+
+
 // Retturns a real DB connection
 func MakeDefaultFetcher(dsn string) (DefaultFetcher, error) {
     var db *sql.DB
@@ -19,11 +24,6 @@ func MakeDefaultFetcher(dsn string) (DefaultFetcher, error) {
     }
     output = DefaultFetcher{db}
     return output, nil
-}
-
-
-type DefaultFetcher struct {
-    db *sql.DB
 }
 
 
