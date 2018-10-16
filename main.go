@@ -9,5 +9,7 @@ func main() {
     act, err := conn.Activity()
     fmt.Println(conn)
     fmt.Println(err)
-    fmt.Println(act)
+    for idx, a := range(act) {
+        fmt.Printf("Row %03d: %v\n", idx, a)
+    }
 }
