@@ -18,3 +18,23 @@ func MakeDefaultFetcher(db *sql.DB) DefaultFetcher {
 	output = DefaultFetcher{db}
 	return output
 }
+
+func (fetcher DefaultFetcher) ListDatabases() ([]DatabaseRow, error) {
+	query := getMatchingQuery(fetcher, ListDBQueries[:])
+	rows, err := fetcher.db.Query(query)
+	if err != nil {
+		return []DatabaseRow{}, err
+	}
+	defer rows.Close()
+
+	output := []DatabaseRow{}
+	for rows.Next() {
+		var row DatabaseRow
+		err = rows.Scan(&row.Name)
+		if err != nil {
+			return []DatabaseRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}

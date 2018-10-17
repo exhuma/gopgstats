@@ -54,3 +54,16 @@ func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORo
 	}
 	return output, err
 }
+
+func (fetcher DefaultFetcher) DiskIOAll(dsn string) ([]DiskIORow, error) {
+	allDbs, err := fetcher.ListDatabases()
+	if err != nil {
+		return []DiskIORow{}, err
+	}
+	dbs := make([]string, len(allDbs))
+	for idx, row := range allDbs {
+		dbs[idx] = row.Name
+	}
+	output, err := fetcher.DiskIO(dbs, dsn)
+	return output, err
+}
