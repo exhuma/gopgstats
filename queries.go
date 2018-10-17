@@ -6,10 +6,10 @@ var DiskSizeQueries = [1]VersionedQuery{
 
 var LocksQueries = [1]VersionedQuery{
 	VersionedQuery{0, `SELECT
-        db.datname,
-        LOWER(mode),
-        locktype,
-        granted,
+        COALESCE(db.datname, '<unknown>'),
+        COALESCE(LOWER(mode), '<unknown>'),
+        COALESCE(locktype, '<unknown>'),
+        COALESCE(granted, false),
         COUNT(mode)
     FROM pg_database db
     FULL OUTER JOIN pg_locks lck ON (db.oid=lck.database)
