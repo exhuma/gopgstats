@@ -26,8 +26,8 @@ type GlobalSizesRow struct {
 
 type QueryAgesRow struct {
 	DatabaseName   string
-	QueryAge       uint
-	TransactionAge uint
+	QueryAge       float64
+	TransactionAge float64
 }
 
 type TransactionsRow struct {

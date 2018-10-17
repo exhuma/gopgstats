@@ -59,18 +59,18 @@ var QueryAgesQueries = [2]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
             datname,
-            COALESCE(MAX(extract(EPOCH FROM NOW() - query_start)), 0),
-            COALESCE(MAX(extract(EPOCH FROM NOW() - xact_start)), 0)
+            MAX(extract(EPOCH FROM NOW() - query_start)),
+            MAX(extract(EPOCH FROM NOW() - xact_start))
         FROM pg_stat_activity
         WHERE current_query NOT LIKE '<IDLE%'
         GROUP BY datname`},
 	VersionedQuery{90200, `
         SELECT
             datname,
-            COALESCE(MAX(extract(EPOCH FROM NOW() - query_start)), 0),
-            COALESCE(MAX(extract(EPOCH FROM NOW() - xact_start)), 0)
+            MAX(extract(EPOCH FROM NOW() - query_start)),
+            MAX(extract(EPOCH FROM NOW() - xact_start))
         FROM pg_stat_activity
-        WHERE state NOT LIKE '%idle%'
+        WHERE state != 'idle'
         GROUP BY datname`}}
 
 var TransactionsQueries = [1]VersionedQuery{
