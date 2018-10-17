@@ -16,6 +16,25 @@
 // version of `0`.
 package gopgstats
 
+// Retrieves the appropriate query according to the PostgreSQL server version
+func getMatchingQuery(fetcher DefaultFetcher, queries []VersionedQuery) string {
+	rows, err := fetcher.db.Query("select current_setting('server_version_num')")
+	defer rows.Close()
+	if err != nil {
+		panic(err)
+	}
+	var version int
+	rows.Next()
+	rows.Scan(&version)
+	query, valid := GetFirstMatch(queries, version)
+	if !valid {
+		panic("Unable to get a matching query for this db-version!")
+	}
+	return query
+}
+
+// --- Query Definitions -----------------------------------------------------
+
 var ListDBQueries = [1]VersionedQuery{
 	VersionedQuery{0, `SELECT datname
                        FROM pg_database
