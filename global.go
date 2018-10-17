@@ -132,4 +132,26 @@ func (fetcher DefaultFetcher) Transactions() ([]TransactionsRow, error) {
 	return output, err
 }
 
-// TODO TempBytes
+func (fetcher DefaultFetcher) TempBytes() ([]TempBytesRow, error) {
+	query := getMatchingQuery(fetcher, TempBytesQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []TempBytesRow{}, err
+	}
+
+	output := []TempBytesRow{}
+	for rows.Next() {
+		var row TempBytesRow
+		err = rows.Scan(
+			&row.DatabaseName,
+			&row.TemporaryBytes,
+		)
+		if err != nil {
+			return []TempBytesRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}

@@ -45,6 +45,13 @@ func main() {
 		fmt.Println(item)
 	}
 
+	fmt.Println("--- Temporary Bytes")
+	tbytes, err := fetcher.TempBytes()
+	fmt.Println("Error:", err)
+	for _, item := range tbytes {
+		fmt.Println(item)
+	}
+
     // --- Locals
 	fmt.Println("--- Disk IO")
 	diskio, err := fetcher.DiskIOAll(dsn)
