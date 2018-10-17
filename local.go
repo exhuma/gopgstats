@@ -9,9 +9,9 @@ package gopgstats
 
 import "database/sql"
 
-func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORow, error) {
+func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIOsRow, error) {
 	var err error
-	output := []DiskIORow{}
+	output := []DiskIOsRow{}
 
 	for _, dbname := range databases {
 
@@ -19,7 +19,7 @@ func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORo
 		newDsn := DsnForDatabase(dsn, dbname)
 		localDb, err := sql.Open("postgres", newDsn)
 		if err != nil {
-			return []DiskIORow{}, err
+			return []DiskIOsRow{}, err
 		}
 		defer localDb.Close()
 
@@ -32,10 +32,10 @@ func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORo
 		rows, err := localDb.Query(query)
 		defer rows.Close()
 		if err != nil {
-			return []DiskIORow{}, err
+			return []DiskIOsRow{}, err
 		}
 		for rows.Next() {
-			var row DiskIORow
+			var row DiskIOsRow
 			row.DatabaseName = dbname
 			err = rows.Scan(
 				&row.HeapBlocksRead,
@@ -47,7 +47,7 @@ func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORo
 				&row.ToastIndexBlocksRead,
 				&row.ToastIndexBlocksHit)
 			if err != nil {
-				return []DiskIORow{}, err
+				return []DiskIOsRow{}, err
 			}
 			output = append(output, row)
 		}
@@ -55,10 +55,10 @@ func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORo
 	return output, err
 }
 
-func (fetcher DefaultFetcher) DiskIOAll(dsn string) ([]DiskIORow, error) {
+func (fetcher DefaultFetcher) DiskIOAll(dsn string) ([]DiskIOsRow, error) {
 	allDbs, err := fetcher.ListDatabases()
 	if err != nil {
-		return []DiskIORow{}, err
+		return []DiskIOsRow{}, err
 	}
 	dbs := make([]string, len(allDbs))
 	for idx, row := range allDbs {

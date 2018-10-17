@@ -8,21 +8,21 @@
 
 package gopgstats
 
-func (fetcher DefaultFetcher) DiskSize() ([]DiskSizeRow, error) {
+func (fetcher DefaultFetcher) DiskSize() ([]DiskSizesRow, error) {
 	query := getMatchingQuery(fetcher, DiskSizeQueries[:])
 	rows, err := fetcher.db.Query(query)
 	defer rows.Close()
 
 	if err != nil {
-		return []DiskSizeRow{}, err
+		return []DiskSizesRow{}, err
 	}
 
-	output := []DiskSizeRow{}
+	output := []DiskSizesRow{}
 	for rows.Next() {
-		var row DiskSizeRow
+		var row DiskSizesRow
 		err = rows.Scan(&row.DatabaseName, &row.Size)
 		if err != nil {
-			return []DiskSizeRow{}, err
+			return []DiskSizesRow{}, err
 		}
 		output = append(output, row)
 	}
@@ -49,6 +49,107 @@ func (fetcher DefaultFetcher) Locks() ([]LocksRow, error) {
 			&row.Count)
 		if err != nil {
 			return []LocksRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) Connections() ([]ConnectionsRow, error) {
+	query := getMatchingQuery(fetcher, ConnectionsQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []ConnectionsRow{}, err
+	}
+
+	output := []ConnectionsRow{}
+	for rows.Next() {
+		var row ConnectionsRow
+		err = rows.Scan(
+			&row.Username,
+			&row.Idle,
+			&row.IdleInTransaction,
+			&row.Unknown,
+			&row.QueryActive,
+			&row.Waiting)
+		if err != nil {
+			return []ConnectionsRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) QueryAges() ([]QueryAgesRow, error) {
+	query := getMatchingQuery(fetcher, QueryAgesQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []QueryAgesRow{}, err
+	}
+
+	output := []QueryAgesRow{}
+	for rows.Next() {
+		var row QueryAgesRow
+		err = rows.Scan(
+			&row.DatabaseName,
+			&row.QueryAge,
+			&row.TransactionAge,
+		)
+		if err != nil {
+			return []QueryAgesRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) Transactions() ([]TransactionsRow, error) {
+	query := getMatchingQuery(fetcher, TransactionsQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []TransactionsRow{}, err
+	}
+
+	output := []TransactionsRow{}
+	for rows.Next() {
+		var row TransactionsRow
+		err = rows.Scan(
+			&row.DatabaseName,
+			&row.Committed,
+			&row.Rolledback,
+		)
+		if err != nil {
+			return []TransactionsRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) TempBytes() ([]TempBytesRow, error) {
+	query := getMatchingQuery(fetcher, TempBytesQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []TempBytesRow{}, err
+	}
+
+	output := []TempBytesRow{}
+	for rows.Next() {
+		var row TempBytesRow
+		err = rows.Scan(
+			&row.DatabaseName,
+			&row.TemporaryBytes,
+		)
+		if err != nil {
+			return []TempBytesRow{}, err
 		}
 		output = append(output, row)
 	}

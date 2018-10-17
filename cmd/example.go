@@ -17,12 +17,42 @@ func main() {
 		panic(err)
 	}
 
+    // --- Globals
 	fmt.Println("--- Locks")
 	fetcher := gopgstats.MakeDefaultFetcher(db)
 	result, err := fetcher.Locks()
 	fmt.Println("Error:", err)
 	fmt.Println(result)
 
+	fmt.Println("--- Connections")
+	conns, err := fetcher.Connections()
+	fmt.Println("Error:", err)
+	for _, item := range conns {
+		fmt.Println(item)
+	}
+
+	fmt.Println("--- QueryAges")
+	ages, err := fetcher.QueryAges()
+	fmt.Println("Error:", err)
+	for _, item := range ages {
+		fmt.Println(item)
+	}
+
+	fmt.Println("--- Transactions")
+	txs, err := fetcher.Transactions()
+	fmt.Println("Error:", err)
+	for _, item := range txs {
+		fmt.Println(item)
+	}
+
+	fmt.Println("--- Temporary Bytes")
+	tbytes, err := fetcher.TempBytes()
+	fmt.Println("Error:", err)
+	for _, item := range tbytes {
+		fmt.Println(item)
+	}
+
+    // --- Locals
 	fmt.Println("--- Disk IO")
 	diskio, err := fetcher.DiskIOAll(dsn)
 	fmt.Println("Error:", err)
