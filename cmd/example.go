@@ -17,12 +17,21 @@ func main() {
 		panic(err)
 	}
 
+    // --- Globals
 	fmt.Println("--- Locks")
 	fetcher := gopgstats.MakeDefaultFetcher(db)
 	result, err := fetcher.Locks()
 	fmt.Println("Error:", err)
 	fmt.Println(result)
 
+	fmt.Println("--- Connections")
+	conns, err := fetcher.Connections()
+	fmt.Println("Error:", err)
+	for _, item := range conns {
+		fmt.Println(item)
+	}
+
+    // --- Locals
 	fmt.Println("--- Disk IO")
 	diskio, err := fetcher.DiskIOAll(dsn)
 	fmt.Println("Error:", err)

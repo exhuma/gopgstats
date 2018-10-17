@@ -54,3 +54,34 @@ func (fetcher DefaultFetcher) Locks() ([]LocksRow, error) {
 	}
 	return output, err
 }
+
+func (fetcher DefaultFetcher) Connections() ([]ConnectionsRow, error) {
+	query := getMatchingQuery(fetcher, ConnectionsQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []ConnectionsRow{}, err
+	}
+
+	output := []ConnectionsRow{}
+	for rows.Next() {
+		var row ConnectionsRow
+		err = rows.Scan(
+			&row.Username,
+			&row.Idle,
+			&row.IdleInTransaction,
+			&row.Unknown,
+			&row.QueryActive,
+			&row.Waiting)
+		if err != nil {
+			return []ConnectionsRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
+// TODO Query Ages
+// TODO Transactions
+// TODO TempBytes
