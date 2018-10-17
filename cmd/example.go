@@ -38,6 +38,13 @@ func main() {
 		fmt.Println(item)
 	}
 
+	fmt.Println("--- Transactions")
+	txs, err := fetcher.Transactions()
+	fmt.Println("Error:", err)
+	for _, item := range txs {
+		fmt.Println(item)
+	}
+
     // --- Locals
 	fmt.Println("--- Disk IO")
 	diskio, err := fetcher.DiskIOAll(dsn)

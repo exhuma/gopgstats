@@ -107,5 +107,29 @@ func (fetcher DefaultFetcher) QueryAges() ([]QueryAgeRow, error) {
 	return output, err
 }
 
-// TODO Transactions
+func (fetcher DefaultFetcher) Transactions() ([]TransactionsRow, error) {
+	query := getMatchingQuery(fetcher, TransactionsQuery[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []TransactionsRow{}, err
+	}
+
+	output := []TransactionsRow{}
+	for rows.Next() {
+		var row TransactionsRow
+		err = rows.Scan(
+			&row.DatabaseName,
+			&row.Committed,
+			&row.Rolledback,
+		)
+		if err != nil {
+			return []TransactionsRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
 // TODO TempBytes
