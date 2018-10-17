@@ -2,7 +2,6 @@ package gopgstats
 
 import (
 	"database/sql"
-	_ "github.com/lib/pq"
 )
 
 type DefaultFetcher struct {
@@ -10,17 +9,10 @@ type DefaultFetcher struct {
 }
 
 // Retturns a real DB connection
-func MakeDefaultFetcher(dsn string) (DefaultFetcher, error) {
-	var db *sql.DB
-	var err error
-	db, err = sql.Open("postgres", dsn)
-
+func MakeDefaultFetcher(db *sql.DB) (DefaultFetcher) {
 	var output DefaultFetcher
-	if err != nil {
-		output = DefaultFetcher{}
-	}
 	output = DefaultFetcher{db}
-	return output, nil
+	return output
 }
 
 func getMatchingQuery(fetcher DefaultFetcher, queries []VersionedQuery) string {
