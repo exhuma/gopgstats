@@ -33,7 +33,7 @@ func getMatchingQuery(fetcher DefaultFetcher, queries []VersionedQuery) string {
 	return query
 }
 
-// --- Query Definitions -----------------------------------------------------
+// --- "Global" Query definitions --------------------------------------------
 
 var ListDBQueries = [1]VersionedQuery{
 	VersionedQuery{0, `SELECT datname
@@ -73,49 +73,6 @@ var QueryAgesQueries = [2]VersionedQuery{
         WHERE state NOT LIKE '%idle%'
         GROUP BY datname`}}
 
-var DiskIOQueries = [1]VersionedQuery{
-	VersionedQuery{0, `
-        SELECT
-            COALESCE(SUM(heap_blks_read), 0) AS heap_blks_read,
-            COALESCE(SUM(heap_blks_hit), 0) AS heap_blks_hit,
-            COALESCE(SUM(idx_blks_read), 0) AS idx_blks_read,
-            COALESCE(SUM(idx_blks_hit), 0) AS idx_blks_hit,
-            COALESCE(SUM(toast_blks_read), 0) AS toast_blks_read,
-            COALESCE(SUM(toast_blks_hit), 0) AS toast_blks_hit,
-            COALESCE(SUM(tidx_blks_read), 0) AS tidx_blks_read,
-            COALESCE(SUM(tidx_blks_hit), 0) AS tidx_blks_hit
-        FROM pg_statio_user_tables;`}}
-
-var IndexIOQueries = [1]VersionedQuery{
-	VersionedQuery{0, `
-        SELECT
-            SUM(idx_blks_read) AS idx_blks_read,
-            SUM(idx_blks_hit) AS idx_blks_hit
-        FROM pg_statio_user_indexes;`}}
-
-var SequencesIOQueries = [1]VersionedQuery{
-	VersionedQuery{0, `
-        SELECT
-            SUM(blks_read) AS blks_read,
-            SUM(blks_hit) AS blks_hit
-        FROM pg_statio_user_sequences`}}
-
-var ScanTypesQueries = [1]VersionedQuery{
-	VersionedQuery{0, `
-        SELECT
-            SUM(idx_scan) AS idx_scan,
-            SUM(seq_scan) AS seq_scan
-        FROM pg_stat_user_tables`}}
-
-var RowAccessQueries = [1]VersionedQuery{
-	VersionedQuery{0, `
-        SELECT
-            SUM(n_tup_ins) AS n_tup_ins,
-            SUM(n_tup_upd) AS n_tup_upd,
-            SUM(n_tup_del) AS n_tup_del,
-            SUM(n_tup_hot_upd) AS n_tup_hot_upd
-        FROM pg_stat_user_tables`}}
-
 var TransactionsQuery = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
@@ -123,24 +80,6 @@ var TransactionsQuery = [1]VersionedQuery{
             pg_stat_get_db_xact_commit(oid),
             pg_stat_get_db_xact_rollback(oid)
         FROM pg_database`}}
-
-var SizesQueries = [1]VersionedQuery{
-	VersionedQuery{0, `
-        SELECT
-            SUM(pg_relation_size(oid, 'main')) AS main_size,
-            SUM(pg_relation_size(oid, 'vm')) AS vm_size,
-            SUM(pg_relation_size(oid, 'fsm')) AS fsm_size,
-            SUM(
-                CASE reltoastrelid
-                WHEN 0 THEN 0
-                ELSE pg_total_relation_size(reltoastrelid)
-                END
-            ) AS toast_size,
-            SUM(pg_indexes_size(oid)) AS indexes_size,
-            pg_database_size(current_database()) AS database_size
-            FROM pg_class
-            WHERE relkind not in ('t', 'i')
-            AND NOT relisshared`}}
 
 var TempBytesQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
@@ -233,3 +172,66 @@ var ConnectionsQueries = [3]VersionedQuery{
         WHERE COALESCE(conntype.pid, 0) <> pg_backend_pid()
         GROUP BY usename
         ORDER BY usename`}}
+
+// --- "Local" Query definitions ---------------------------------------------
+
+var DiskIOQueries = [1]VersionedQuery{
+	VersionedQuery{0, `
+        SELECT
+            COALESCE(SUM(heap_blks_read), 0) AS heap_blks_read,
+            COALESCE(SUM(heap_blks_hit), 0) AS heap_blks_hit,
+            COALESCE(SUM(idx_blks_read), 0) AS idx_blks_read,
+            COALESCE(SUM(idx_blks_hit), 0) AS idx_blks_hit,
+            COALESCE(SUM(toast_blks_read), 0) AS toast_blks_read,
+            COALESCE(SUM(toast_blks_hit), 0) AS toast_blks_hit,
+            COALESCE(SUM(tidx_blks_read), 0) AS tidx_blks_read,
+            COALESCE(SUM(tidx_blks_hit), 0) AS tidx_blks_hit
+        FROM pg_statio_user_tables;`}}
+
+var IndexIOQueries = [1]VersionedQuery{
+	VersionedQuery{0, `
+        SELECT
+            SUM(idx_blks_read) AS idx_blks_read,
+            SUM(idx_blks_hit) AS idx_blks_hit
+        FROM pg_statio_user_indexes;`}}
+
+var SequencesIOQueries = [1]VersionedQuery{
+	VersionedQuery{0, `
+        SELECT
+            SUM(blks_read) AS blks_read,
+            SUM(blks_hit) AS blks_hit
+        FROM pg_statio_user_sequences`}}
+
+var ScanTypesQueries = [1]VersionedQuery{
+	VersionedQuery{0, `
+        SELECT
+            SUM(idx_scan) AS idx_scan,
+            SUM(seq_scan) AS seq_scan
+        FROM pg_stat_user_tables`}}
+
+var RowAccessQueries = [1]VersionedQuery{
+	VersionedQuery{0, `
+        SELECT
+            SUM(n_tup_ins) AS n_tup_ins,
+            SUM(n_tup_upd) AS n_tup_upd,
+            SUM(n_tup_del) AS n_tup_del,
+            SUM(n_tup_hot_upd) AS n_tup_hot_upd
+        FROM pg_stat_user_tables`}}
+
+var SizesQueries = [1]VersionedQuery{
+	VersionedQuery{0, `
+        SELECT
+            SUM(pg_relation_size(oid, 'main')) AS main_size,
+            SUM(pg_relation_size(oid, 'vm')) AS vm_size,
+            SUM(pg_relation_size(oid, 'fsm')) AS fsm_size,
+            SUM(
+                CASE reltoastrelid
+                WHEN 0 THEN 0
+                ELSE pg_total_relation_size(reltoastrelid)
+                END
+            ) AS toast_size,
+            SUM(pg_indexes_size(oid)) AS indexes_size,
+            pg_database_size(current_database()) AS database_size
+            FROM pg_class
+            WHERE relkind not in ('t', 'i')
+            AND NOT relisshared`}}
