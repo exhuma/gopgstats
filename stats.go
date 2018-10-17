@@ -9,7 +9,7 @@ type DefaultFetcher struct {
 }
 
 // Retturns a real DB connection
-func MakeDefaultFetcher(db *sql.DB) (DefaultFetcher) {
+func MakeDefaultFetcher(db *sql.DB) DefaultFetcher {
 	var output DefaultFetcher
 	output = DefaultFetcher{db}
 	return output
@@ -46,6 +46,35 @@ func (fetcher DefaultFetcher) DiskSize() ([]DiskSizeRow, error) {
 		err = rows.Scan(&row.DatabaseName, &row.Size)
 		if err != nil {
 			return []DiskSizeRow{}, err
+		}
+		output = append(output, row)
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) DiskIO() ([]DiskIORow, error) {
+	query := getMatchingQuery(fetcher, DiskIOQueries[:])
+	rows, err := fetcher.db.Query(query)
+	defer rows.Close()
+
+	if err != nil {
+		return []DiskIORow{}, err
+	}
+
+	output := []DiskIORow{}
+	for rows.Next() {
+		var row DiskIORow
+		err = rows.Scan(
+			&row.HeapBlocksRead,
+			&row.HeapBlocksHit,
+			&row.IndexBlocksRead,
+			&row.IndexBlocksHit,
+			&row.ToastBlocksRead,
+			&row.ToastBlocksHit,
+			&row.ToastIndexBlocksRead,
+			&row.ToastIndexBlocksHit)
+		if err != nil {
+			return []DiskIORow{}, err
 		}
 		output = append(output, row)
 	}
