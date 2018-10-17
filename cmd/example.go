@@ -31,6 +31,13 @@ func main() {
 		fmt.Println(item)
 	}
 
+	fmt.Println("--- QueryAges")
+	ages, err := fetcher.QueryAges()
+	fmt.Println("Error:", err)
+	for _, item := range ages {
+		fmt.Println(item)
+	}
+
     // --- Locals
 	fmt.Println("--- Disk IO")
 	diskio, err := fetcher.DiskIOAll(dsn)
