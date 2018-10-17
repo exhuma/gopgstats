@@ -44,6 +44,7 @@ type TempBytesRow struct {
 // --- DB detail statistices (must be connected to the respective DB) --------
 
 type DiskIORow struct {
+	DatabaseName         string
 	HeapBlocksRead       uint
 	HeapBlocksHit        uint
 	IndexBlocksRead      uint

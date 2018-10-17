@@ -7,31 +7,50 @@
 
 package gopgstats
 
-func (fetcher DefaultFetcher) DiskIO() ([]DiskIORow, error) {
-	query := getMatchingQuery(fetcher, DiskIOQueries[:])
-	rows, err := fetcher.db.Query(query)
-	defer rows.Close()
+import "database/sql"
 
-	if err != nil {
-		return []DiskIORow{}, err
-	}
-
+func (fetcher DefaultFetcher) DiskIO(databases []string, dsn string) ([]DiskIORow, error) {
+	var err error
 	output := []DiskIORow{}
-	for rows.Next() {
-		var row DiskIORow
-		err = rows.Scan(
-			&row.HeapBlocksRead,
-			&row.HeapBlocksHit,
-			&row.IndexBlocksRead,
-			&row.IndexBlocksHit,
-			&row.ToastBlocksRead,
-			&row.ToastBlocksHit,
-			&row.ToastIndexBlocksRead,
-			&row.ToastIndexBlocksHit)
+
+	for _, dbname := range databases {
+
+		// We need to open a new connection to get access to these stats.
+		newDsn := DsnForDatabase(dsn, dbname)
+		localDb, err := sql.Open("postgres", newDsn)
 		if err != nil {
 			return []DiskIORow{}, err
 		}
-		output = append(output, row)
+		defer localDb.Close()
+
+		// TODO It is ugly that we use "fetcher" to determine the db version
+		// but run the query on "localDb". It would be better to have a method
+		// in "fetcher" which executes a query on a localised connection, so
+		// instead of having "fetcher.db.Query", it would be better to split it
+		// into "fetcher.Query" and "fetcher.LocalQuery".
+		query := getMatchingQuery(fetcher, DiskIOQueries[:])
+		rows, err := localDb.Query(query)
+		defer rows.Close()
+		if err != nil {
+			return []DiskIORow{}, err
+		}
+		for rows.Next() {
+			var row DiskIORow
+			row.DatabaseName = dbname
+			err = rows.Scan(
+				&row.HeapBlocksRead,
+				&row.HeapBlocksHit,
+				&row.IndexBlocksRead,
+				&row.IndexBlocksHit,
+				&row.ToastBlocksRead,
+				&row.ToastBlocksHit,
+				&row.ToastIndexBlocksRead,
+				&row.ToastIndexBlocksHit)
+			if err != nil {
+				return []DiskIORow{}, err
+			}
+			output = append(output, row)
+		}
 	}
 	return output, err
 }
