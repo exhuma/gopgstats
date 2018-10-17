@@ -76,14 +76,14 @@ var QueryAgesQueries = [2]VersionedQuery{
 var DiskIOQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(heap_blks_read) AS heap_blks_read,
-            SUM(heap_blks_hit) AS heap_blks_hit,
-            SUM(idx_blks_read) AS idx_blks_read,
-            SUM(idx_blks_hit) AS idx_blks_hit,
-            SUM(toast_blks_read) AS toast_blks_read,
-            SUM(toast_blks_hit) AS toast_blks_hit,
-            SUM(tidx_blks_read) AS tidx_blks_read,
-            SUM(tidx_blks_hit) AS tidx_blks_hit
+            COALESCE(SUM(heap_blks_read), 0) AS heap_blks_read,
+            COALESCE(SUM(heap_blks_hit), 0) AS heap_blks_hit,
+            COALESCE(SUM(idx_blks_read), 0) AS idx_blks_read,
+            COALESCE(SUM(idx_blks_hit), 0) AS idx_blks_hit,
+            COALESCE(SUM(toast_blks_read), 0) AS toast_blks_read,
+            COALESCE(SUM(toast_blks_hit), 0) AS toast_blks_hit,
+            COALESCE(SUM(tidx_blks_read), 0) AS tidx_blks_read,
+            COALESCE(SUM(tidx_blks_hit), 0) AS tidx_blks_hit
         FROM pg_statio_user_tables;`}}
 
 var IndexIOQueries = [1]VersionedQuery{
