@@ -73,7 +73,7 @@ var QueryAgesQueries = [2]VersionedQuery{
         WHERE state NOT LIKE '%idle%'
         GROUP BY datname`}}
 
-var TransactionsQuery = [1]VersionedQuery{
+var TransactionsQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
             datname,

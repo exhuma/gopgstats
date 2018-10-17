@@ -1,12 +1,12 @@
 package gopgstats
 
-type DatabaseRow struct {
+type DatabasesRow struct {
 	Name string
 }
 
 // --- Global Statistics (available from any DB) -----------------------------
 
-type DiskSizeRow struct {
+type DiskSizesRow struct {
 	DatabaseName string
 	Size         uint
 }
@@ -19,12 +19,12 @@ type LocksRow struct {
 	Count        uint
 }
 
-type GlobalSizeRow struct {
+type GlobalSizesRow struct {
 	DatabaseName string
 	Size         uint
 }
 
-type QueryAgeRow struct {
+type QueryAgesRow struct {
 	DatabaseName   string
 	QueryAge       uint
 	TransactionAge uint
@@ -43,7 +43,7 @@ type TempBytesRow struct {
 
 // --- DB detail statistices (must be connected to the respective DB) --------
 
-type DiskIORow struct {
+type DiskIOsRow struct {
 	DatabaseName         string
 	HeapBlocksRead       uint
 	HeapBlocksHit        uint
@@ -55,12 +55,12 @@ type DiskIORow struct {
 	ToastIndexBlocksHit  uint
 }
 
-type IndexIORow struct {
+type IndexIOsRow struct {
 	IndexBlocksRead uint
 	IndexBlocksHit  uint
 }
 
-type SequencesIORow struct {
+type SequencesIOsRow struct {
 	BlocksRead uint
 	BlocksHit  uint
 }
@@ -70,7 +70,7 @@ type ScanTypesRow struct {
 	SequentialScans uint
 }
 
-type RowAccessRow struct {
+type RowAccessesRow struct {
 	InsertedTuples   uint
 	UpdatedTuples    uint
 	DeletedTuples    uint

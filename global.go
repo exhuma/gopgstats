@@ -8,21 +8,21 @@
 
 package gopgstats
 
-func (fetcher DefaultFetcher) DiskSize() ([]DiskSizeRow, error) {
+func (fetcher DefaultFetcher) DiskSize() ([]DiskSizesRow, error) {
 	query := getMatchingQuery(fetcher, DiskSizeQueries[:])
 	rows, err := fetcher.db.Query(query)
 	defer rows.Close()
 
 	if err != nil {
-		return []DiskSizeRow{}, err
+		return []DiskSizesRow{}, err
 	}
 
-	output := []DiskSizeRow{}
+	output := []DiskSizesRow{}
 	for rows.Next() {
-		var row DiskSizeRow
+		var row DiskSizesRow
 		err = rows.Scan(&row.DatabaseName, &row.Size)
 		if err != nil {
-			return []DiskSizeRow{}, err
+			return []DiskSizesRow{}, err
 		}
 		output = append(output, row)
 	}
@@ -82,25 +82,25 @@ func (fetcher DefaultFetcher) Connections() ([]ConnectionsRow, error) {
 	return output, err
 }
 
-func (fetcher DefaultFetcher) QueryAges() ([]QueryAgeRow, error) {
+func (fetcher DefaultFetcher) QueryAges() ([]QueryAgesRow, error) {
 	query := getMatchingQuery(fetcher, QueryAgesQueries[:])
 	rows, err := fetcher.db.Query(query)
 	defer rows.Close()
 
 	if err != nil {
-		return []QueryAgeRow{}, err
+		return []QueryAgesRow{}, err
 	}
 
-	output := []QueryAgeRow{}
+	output := []QueryAgesRow{}
 	for rows.Next() {
-		var row QueryAgeRow
+		var row QueryAgesRow
 		err = rows.Scan(
 			&row.DatabaseName,
 			&row.QueryAge,
 			&row.TransactionAge,
 		)
 		if err != nil {
-			return []QueryAgeRow{}, err
+			return []QueryAgesRow{}, err
 		}
 		output = append(output, row)
 	}
@@ -108,7 +108,7 @@ func (fetcher DefaultFetcher) QueryAges() ([]QueryAgeRow, error) {
 }
 
 func (fetcher DefaultFetcher) Transactions() ([]TransactionsRow, error) {
-	query := getMatchingQuery(fetcher, TransactionsQuery[:])
+	query := getMatchingQuery(fetcher, TransactionsQueries[:])
 	rows, err := fetcher.db.Query(query)
 	defer rows.Close()
 
