@@ -218,7 +218,7 @@ var RowAccessQueries = [1]VersionedQuery{
             SUM(n_tup_hot_upd) AS n_tup_hot_upd
         FROM pg_stat_user_tables`}}
 
-var SizesQueries = [1]VersionedQuery{
+var SizeBreakdownQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
             SUM(pg_relation_size(oid, 'main')) AS main_size,
