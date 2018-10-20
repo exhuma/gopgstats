@@ -191,15 +191,15 @@ var DiskIOQueries = [1]VersionedQuery{
 var IndexIOQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(idx_blks_read) AS idx_blks_read,
-            SUM(idx_blks_hit) AS idx_blks_hit
+            COALESCE(SUM(idx_blks_read), 0) AS idx_blks_read,
+            COALESCE(SUM(idx_blks_hit), 0) AS idx_blks_hit
         FROM pg_statio_user_indexes;`}}
 
 var SequencesIOQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(blks_read) AS blks_read,
-            SUM(blks_hit) AS blks_hit
+            COALESCE(SUM(blks_read), 0) AS blks_read,
+            COALESCE(SUM(blks_hit), 0) AS blks_hit
         FROM pg_statio_user_sequences`}}
 
 var ScanTypesQueries = [1]VersionedQuery{

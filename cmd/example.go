@@ -59,4 +59,18 @@ func main() {
 	for _, item := range diskio {
 		fmt.Println(item)
 	}
+
+	fmt.Println("--- Index IO")
+	indexio, err := fetcher.IndexIOAll(dsn)
+	fmt.Println("Error:", err)
+	for _, item := range indexio {
+		fmt.Println(item)
+	}
+
+	fmt.Println("--- Sequences IO")
+	sequencesio, err := fetcher.SequencesIOAll(dsn)
+	fmt.Println("Error:", err)
+	for _, item := range sequencesio {
+		fmt.Println(item)
+	}
 }
