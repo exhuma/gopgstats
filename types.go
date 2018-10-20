@@ -41,6 +41,15 @@ type TempBytesRow struct {
 	TemporaryBytes uint
 }
 
+type ConnectionsRow struct {
+	Username          string
+	Idle              uint
+	IdleInTransaction uint
+	Unknown           uint
+	QueryActive       uint
+	Waiting           uint
+}
+
 // --- DB detail statistics (must be connected to the respective DB) --------
 
 type DiskIOsRow struct {
@@ -89,13 +98,4 @@ type SizeBreakdownRow struct {
 	Toast        uint
 	Indexes      uint
 	DiskFiles    uint
-}
-
-type ConnectionsRow struct {
-	Username          string
-	Idle              uint
-	IdleInTransaction uint
-	Unknown           uint
-	QueryActive       uint
-	Waiting           uint
 }
