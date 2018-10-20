@@ -191,34 +191,34 @@ var DiskIOQueries = [1]VersionedQuery{
 var IndexIOQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(idx_blks_read) AS idx_blks_read,
-            SUM(idx_blks_hit) AS idx_blks_hit
+            COALESCE(SUM(idx_blks_read), 0) AS idx_blks_read,
+            COALESCE(SUM(idx_blks_hit), 0) AS idx_blks_hit
         FROM pg_statio_user_indexes;`}}
 
 var SequencesIOQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(blks_read) AS blks_read,
-            SUM(blks_hit) AS blks_hit
+            COALESCE(SUM(blks_read), 0) AS blks_read,
+            COALESCE(SUM(blks_hit), 0) AS blks_hit
         FROM pg_statio_user_sequences`}}
 
 var ScanTypesQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(idx_scan) AS idx_scan,
-            SUM(seq_scan) AS seq_scan
+            COALESCE(SUM(idx_scan), 0) AS idx_scan,
+            COALESCE(SUM(seq_scan), 0) AS seq_scan
         FROM pg_stat_user_tables`}}
 
 var RowAccessQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(n_tup_ins) AS n_tup_ins,
-            SUM(n_tup_upd) AS n_tup_upd,
-            SUM(n_tup_del) AS n_tup_del,
-            SUM(n_tup_hot_upd) AS n_tup_hot_upd
+            COALESCE(SUM(n_tup_ins), 0) AS n_tup_ins,
+            COALESCE(SUM(n_tup_upd), 0) AS n_tup_upd,
+            COALESCE(SUM(n_tup_del), 0) AS n_tup_del,
+            COALESCE(SUM(n_tup_hot_upd), 0) AS n_tup_hot_upd
         FROM pg_stat_user_tables`}}
 
-var SizesQueries = [1]VersionedQuery{
+var SizeBreakdownQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
             SUM(pg_relation_size(oid, 'main')) AS main_size,
