@@ -73,4 +73,11 @@ func main() {
 	for _, item := range sequencesio {
 		fmt.Println(item)
 	}
+
+	fmt.Println("--- Scan Types")
+	scanTypes, err := fetcher.ScanTypesAll(dsn)
+	fmt.Println("Error:", err)
+	for _, item := range scanTypes {
+		fmt.Println(item)
+	}
 }

@@ -175,3 +175,57 @@ func (fetcher DefaultFetcher) SequencesIOAll(dsn string) ([]SequencesIOsRow, err
 	output, err := fetcher.SequencesIO(dbs, dsn)
 	return output, err
 }
+
+func (fetcher DefaultFetcher) ScanTypes(databases []string, dsn string) ([]ScanTypesRow, error) {
+	var err error
+	output := []ScanTypesRow{}
+
+	for _, dbname := range databases {
+
+		// We need to open a new connection to get access to these stats.
+		newDsn := DsnForDatabase(dsn, dbname)
+		localDb, err := sql.Open("postgres", newDsn)
+		if err != nil {
+			return []ScanTypesRow{}, err
+		}
+		defer localDb.Close()
+
+		// TODO It is ugly that we use "fetcher" to determine the db version
+		// but run the query on "localDb". It would be better to have a method
+		// in "fetcher" which executes a query on a localised connection, so
+		// instead of having "fetcher.db.Query", it would be better to split it
+		// into "fetcher.Query" and "fetcher.LocalQuery".
+		query := getMatchingQuery(fetcher, ScanTypesQueries[:])
+		rows, err := localDb.Query(query)
+		defer rows.Close()
+		if err != nil {
+			return []ScanTypesRow{}, err
+		}
+		for rows.Next() {
+			var row ScanTypesRow
+			row.DatabaseName = dbname
+			err = rows.Scan(
+				&row.IndexScans,
+				&row.SequentialScans,
+			)
+			if err != nil {
+				return []ScanTypesRow{}, err
+			}
+			output = append(output, row)
+		}
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) ScanTypesAll(dsn string) ([]ScanTypesRow, error) {
+	allDbs, err := fetcher.ListDatabases()
+	if err != nil {
+		return []ScanTypesRow{}, err
+	}
+	dbs := make([]string, len(allDbs))
+	for idx, row := range allDbs {
+		dbs[idx] = row.Name
+	}
+	output, err := fetcher.ScanTypes(dbs, dsn)
+	return output, err
+}
