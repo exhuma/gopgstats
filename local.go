@@ -285,3 +285,61 @@ func (fetcher DefaultFetcher) RowAccessesAll(dsn string) ([]RowAccessesRow, erro
 	output, err := fetcher.RowAccesses(dbs, dsn)
 	return output, err
 }
+
+func (fetcher DefaultFetcher) SizeBreakdown(databases []string, dsn string) ([]SizeBreakdownRow, error) {
+	var err error
+	output := []SizeBreakdownRow{}
+
+	for _, dbname := range databases {
+
+		// We need to open a new connection to get access to these stats.
+		newDsn := DsnForDatabase(dsn, dbname)
+		localDb, err := sql.Open("postgres", newDsn)
+		if err != nil {
+			return []SizeBreakdownRow{}, err
+		}
+		defer localDb.Close()
+
+		// TODO It is ugly that we use "fetcher" to determine the db version
+		// but run the query on "localDb". It would be better to have a method
+		// in "fetcher" which executes a query on a localised connection, so
+		// instead of having "fetcher.db.Query", it would be better to split it
+		// into "fetcher.Query" and "fetcher.LocalQuery".
+		query := getMatchingQuery(fetcher, SizeBreakdownQueries[:])
+		rows, err := localDb.Query(query)
+		defer rows.Close()
+		if err != nil {
+			return []SizeBreakdownRow{}, err
+		}
+		for rows.Next() {
+			var row SizeBreakdownRow
+			row.DatabaseName = dbname
+			err = rows.Scan(
+				&row.Main,
+				&row.Vm,
+				&row.Fsm,
+				&row.Toast,
+				&row.Indexes,
+				&row.DiskFiles,
+			)
+			if err != nil {
+				return []SizeBreakdownRow{}, err
+			}
+			output = append(output, row)
+		}
+	}
+	return output, err
+}
+
+func (fetcher DefaultFetcher) SizeBreakdownAll(dsn string) ([]SizeBreakdownRow, error) {
+	allDbs, err := fetcher.ListDatabases()
+	if err != nil {
+		return []SizeBreakdownRow{}, err
+	}
+	dbs := make([]string, len(allDbs))
+	for idx, row := range allDbs {
+		dbs[idx] = row.Name
+	}
+	output, err := fetcher.SizeBreakdown(dbs, dsn)
+	return output, err
+}

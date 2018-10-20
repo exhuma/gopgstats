@@ -80,4 +80,11 @@ func main() {
 	for _, item := range scanTypes {
 		fmt.Println(item)
 	}
+
+	fmt.Println("--- Size Breakdown")
+	sizeBreakdown, err := fetcher.SizeBreakdownAll(dsn)
+	fmt.Println("Error:", err)
+	for _, item := range sizeBreakdown {
+		fmt.Println(item)
+	}
 }
