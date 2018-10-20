@@ -41,7 +41,7 @@ type TempBytesRow struct {
 	TemporaryBytes uint
 }
 
-// --- DB detail statistices (must be connected to the respective DB) --------
+// --- DB detail statistics (must be connected to the respective DB) --------
 
 type DiskIOsRow struct {
 	DatabaseName         string
