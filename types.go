@@ -56,21 +56,25 @@ type DiskIOsRow struct {
 }
 
 type IndexIOsRow struct {
+	DatabaseName    string
 	IndexBlocksRead uint
 	IndexBlocksHit  uint
 }
 
 type SequencesIOsRow struct {
-	BlocksRead uint
-	BlocksHit  uint
+	DatabaseName string
+	BlocksRead   uint
+	BlocksHit    uint
 }
 
 type ScanTypesRow struct {
+	DatabaseName    string
 	IndexScans      uint
 	SequentialScans uint
 }
 
 type RowAccessesRow struct {
+	DatabaseName     string
 	InsertedTuples   uint
 	UpdatedTuples    uint
 	DeletedTuples    uint
@@ -78,12 +82,13 @@ type RowAccessesRow struct {
 }
 
 type SizeBreakdownRow struct {
-	Main      uint
-	Vm        uint
-	Fsm       uint
-	Toast     uint
-	Indexes   uint
-	DiskFiles uint
+	DatabaseName string
+	Main         uint
+	Vm           uint
+	Fsm          uint
+	Toast        uint
+	Indexes      uint
+	DiskFiles    uint
 }
 
 type ConnectionsRow struct {
