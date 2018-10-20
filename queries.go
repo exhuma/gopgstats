@@ -212,10 +212,10 @@ var ScanTypesQueries = [1]VersionedQuery{
 var RowAccessQueries = [1]VersionedQuery{
 	VersionedQuery{0, `
         SELECT
-            SUM(n_tup_ins) AS n_tup_ins,
-            SUM(n_tup_upd) AS n_tup_upd,
-            SUM(n_tup_del) AS n_tup_del,
-            SUM(n_tup_hot_upd) AS n_tup_hot_upd
+            COALESCE(SUM(n_tup_ins), 0) AS n_tup_ins,
+            COALESCE(SUM(n_tup_upd), 0) AS n_tup_upd,
+            COALESCE(SUM(n_tup_del), 0) AS n_tup_del,
+            COALESCE(SUM(n_tup_hot_upd), 0) AS n_tup_hot_upd
         FROM pg_stat_user_tables`}}
 
 var SizeBreakdownQueries = [1]VersionedQuery{

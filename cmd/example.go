@@ -81,6 +81,13 @@ func main() {
 		fmt.Println(item)
 	}
 
+	fmt.Println("--- Row Accesses")
+	rowAccesses, err := fetcher.RowAccessesAll(dsn)
+	fmt.Println("Error:", err)
+	for _, item := range rowAccesses {
+		fmt.Println(item)
+	}
+
 	fmt.Println("--- Size Breakdown")
 	sizeBreakdown, err := fetcher.SizeBreakdownAll(dsn)
 	fmt.Println("Error:", err)
